@@ -1,0 +1,90 @@
+{
+  "namespace": "com.example.app",
+  "type": "record",
+  "name": "Product",
+  "fields": [
+    {"name": "ageRequiredInMonths", "type": ["null", "int"], "default": null},
+    {"name": "amount", "type": ["null", "string"], "default": null},
+    {"name": "brand", "type": ["null", {
+      "type": "record",
+      "name": "Brand",
+      "fields": [
+        {"name": "name", "type": ["null", "string"], "default": null},
+        {"name": "slug", "type": ["null", "string"], "default": null}
+      ]
+    }], "default": null},
+    {"name": "category", "type": ["null", "string"], "default": null},
+    {"name": "depositType", "type": ["null", "string"], "default": null},
+    {"name": "descriptionShort", "type": ["null", "string"], "default": null},
+    {"name": "images", "type": {"type": "array", "items": "string"}, "default": []},
+    {"name": "name", "type": ["null", "string"], "default": null},
+    {"name": "packageLabel", "type": ["null", "string"], "default": null},
+    {"name": "packageLabelKey", "type": ["null", "string"], "default": null},
+    {
+      "name": "parentCategories",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "Category",
+          "fields": [
+            {"name": "key", "type": ["null", "string"], "default": null},
+            {"name": "name", "type": ["null", "string"], "default": null},
+            {"name": "slug", "type": ["null", "string"], "default": null},
+            {"name": "orderHint", "type": ["null", "string"], "default": null}
+          ]
+        },
+        "default": []
+      }
+    },
+    {"name": "price", "type": ["null", {
+      "type": "record",
+      "name": "Price",
+      "fields": [
+        {"name": "baseUnitLong", "type": ["null", "string"], "default": null},
+        {"name": "baseUnitShort", "type": ["null", "string"], "default": null},
+        {"name": "basePriceFactor", "type": ["null", "string"], "default": null},
+        {
+          "name": "regular",
+          "type": ["null", {
+            "type": "record",
+            "name": "Regular",
+            "fields": [
+              {"name": "perStandardizedQuantity", "type": ["null", "int"], "default": null},
+              {"name": "tags", "type": {"type": "array", "items": "string"}, "default": []},
+              {"name": "value", "type": ["null", "int"], "default": null},
+              {"name": "promotionQuantity", "type": ["null", "int"], "default": null},
+              {"name": "promotionType", "type": ["null", "string"], "default": null},
+              {"name": "promotionValue", "type": ["null", "int"], "default": null},
+              {"name": "promotionValuePerStandardizedQuantity", "type": ["null", "int"], "default": null},
+              {"name": "promotionText", "type": ["null", "string"], "default": null}
+            ]
+          }], "default": null
+        },
+        {"name": "loyalty", "type": ["null", "Regular"], "default": null},
+        {"name": "validityStart", "type": ["null", "string"], "default": null},
+        {"name": "validityEnd", "type": ["null", "string"], "default": null},
+        {"name": "crossed", "type": ["null", "int"], "default": null},
+        {"name": "discountPercentage", "type": ["null", "int"], "default": null},
+        {"name": "lowestPrice", "type": ["null", "int"], "default": null}
+      ]
+    }], "default": null},
+    {"name": "productId", "type": ["null", "string"], "default": null},
+    {"name": "medical", "type": ["null", "boolean"], "default": null},
+    {"name": "sku", "type": ["null", "string"], "default": null},
+    {"name": "slug", "type": ["null", "string"], "default": null},
+    {"name": "purchased", "type": ["null", "boolean"], "default": null},
+    {"name": "volumeLabelKey", "type": ["null", "string"], "default": null},
+    {"name": "volumeLabelLong", "type": ["null", "string"], "default": null},
+    {"name": "volumeLabelShort", "type": ["null", "string"], "default": null},
+    {"name": "weight", "type": ["null", "float"], "default": null},
+    {"name": "weightArticle", "type": ["null", "boolean"], "default": null},
+    {"name": "weightPieceArticle", "type": ["null", "boolean"], "default": null},
+    {"name": "weightPerPiece", "type": ["null", "float"], "default": null},
+    {"name": "productMarketing", "type": ["null", "string"], "default": null},
+    {"name": "maxQuantity", "type": ["null", "int"], "default": null},
+    {"name": "badges", "type": {"type": "array", "items": "string"}, "default": []},
+    {"name": "quantityStepSize", "type": ["null", "int"], "default": null},
+    {"name": "descriptionLong", "type": ["null", "string"], "default": null}
+  ]
+}
