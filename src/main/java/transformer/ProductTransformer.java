@@ -20,18 +20,22 @@ import java.util.Properties;
 
 public class ProductTransformer {
 
-    static final String TOPIC_PRODUCTS_RAW = "products";
-    static final String TOPIC_PRODUCTS_UPDATES = "products-updates";
-    static final String STATE_STORE  = "products-state";
+    private static final String TOPIC_PRODUCTS_RAW = System.getenv("TOPIC_PRODUCTS_RAW") != null ? System.getenv("TOPIC_PRODUCTS_RAW") : "products";
+    private static final String TOPIC_PRODUCTS_UPDATES = System.getenv("TOPIC_PRODUCTS_UPDATES") != null ? System.getenv("TOPIC_PRODUCTS_UPDATES") : "products-updates";
+    private static final String TOPIC_PRODUCTS_PROCESS = System.getenv("TOPIC_PRODUCTS_PROCESS") != null ? System.getenv("TOPIC_PRODUCTS_PROCESS") : "products-process";
+    private static final String STATE_STORE = System.getenv("STATE_STORE") != null ? System.getenv("STATE_STORE") : "products-state";
+    private static final String KAFKA_BOOTSTRAP_SERVERS = System.getenv("KAFKA_BOOTSTRAP_SERVERS") != null ? System.getenv("KAFKA_BOOTSTRAP_SERVERS") : "localhost:29092";
+    private static final String SCHEMA_REGISTRY_URL = System.getenv("SCHEMA_REGISTRY_URL") != null ? System.getenv("SCHEMA_REGISTRY_URL") : "http://localhost:8081";
+    private static final String KAFAK_APPLICATION_ID = System.getenv("KAFAK_APPLICATION_ID") != null ? System.getenv("KAFAK_APPLICATION_ID") : "product-transformer";
+
 
     public static void main(String[] args) {
         Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "product-transformer");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
-        props.put("schema.registry.url", "http://localhost:8081");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, KAFAK_APPLICATION_ID);
+        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BOOTSTRAP_SERVERS);
+        props.put("schema.registry.url", SCHEMA_REGISTRY_URL);
 
-
-        final Map<String, String> serdeConfig = Collections.singletonMap("schema.registry.url", "http://localhost:8081");
+        final Map<String, String> serdeConfig = Collections.singletonMap("schema.registry.url", props.getProperty("schema.registry.url"));
         final Serde<Product> productSerde = new SpecificAvroSerde<>();
         productSerde.configure(serdeConfig, false);
 
@@ -45,11 +49,10 @@ public class ProductTransformer {
                 productSerde);
 
         final StreamsBuilder builder = new StreamsBuilder();
-
         builder.addStateStore(keyValueStoreBuilder);
 
         builder.<String, Product>stream(TOPIC_PRODUCTS_RAW)
-            .process(ProductTransformer::hasDiscountPercentageChangedTransformer, Named.as("product-process"), STATE_STORE)
+            .process(ProductTransformer::hasDiscountPercentageChangedTransformer, Named.as(TOPIC_PRODUCTS_PROCESS), STATE_STORE)
             .filter((key, value) -> value != null)
             .to(TOPIC_PRODUCTS_UPDATES, Produced.with(Serdes.String(), productSerde));
 
@@ -57,7 +60,6 @@ public class ProductTransformer {
         final KafkaStreams streams = new KafkaStreams(topology, props);
 
         streams.start();
-
         Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
     }
 
@@ -85,7 +87,6 @@ public class ProductTransformer {
 
             @Override
             public void process(Record<String, Product> record) {
-
                 Product currentState = stateStore.get(record.key());
                 if (currentState == null || hasDiscountPercentageChanged(currentState, record.value())) {
                     stateStore.put(record.key(), record.value());
